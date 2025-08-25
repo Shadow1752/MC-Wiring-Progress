@@ -2,310 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dodge Ram Diagnostics (Notes + Auto Splash-Pad)</title>
+  <title>MC Wiring & Controls Status</title>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #333;
-    }
-
-    .dashboard {
-      max-width: 900px;
-      margin: 2rem auto;
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 1.5rem;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-
-    .header [contenteditable] {
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    .header [contenteditable]:focus {
-      outline: 2px dashed #007bff;
-    }
-
-    .view-toggle button {
-      margin-left: 0.5rem;
-      padding: 0.4rem 0.8rem;
-      border: 1px solid #007bff;
-      background: #fff;
-      color: #007bff;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .view-toggle button.active {
-      background: #007bff;
-      color: #fff;
-    }
-
-    /* Splash-Pad styles */
-    .splash-pad {
-      display: none;
-      margin: 1rem 0;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .dashboard.client .splash-pad {
-      display: flex;
-    }
-    .splash-pad img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .cards {
-      margin-top: 1.5rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1rem;
-    }
-
-    .card {
-      background: #fafafa;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 1rem;
+      font-family: sans-serif;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
-
-    .card h3[contenteditable] {
-      padding: 2px 4px;
-      border-radius: 4px;
+    h1 {
+      margin-bottom: 1rem;
     }
-
-    .card h3[contenteditable]:focus {
-      outline: 2px dashed #28a745;
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 8px;
-      background: #e0e0e0;
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 0.8rem 0;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0;
-      background: #28a745;
-      transition: width 0.2s ease;
-    }
-
-    .progress-slider {
-      width: 100%;
-      margin-bottom: 0.4rem;
-    }
-
-    .status {
-      font-size: 0.9rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .notes {
-      flex: 1;
-      width: 100%;
-      min-height: 70px;
-      resize: vertical;
-      padding: 6px 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-family: inherit;
-    }
-
-    .add-step {
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 6rem;
       text-align: center;
-      margin-top: 1.5rem;
+      margin-right: 0.5rem;
     }
-
-    .add-step button {
+    button {
       padding: 0.5rem 1rem;
       font-size: 1rem;
-      border: none;
-      background: #007bff;
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s;
     }
-
-    .add-step button:hover {
-      background: #0056b3;
+    .error {
+      color: red;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-
-  <div class="dashboard tech" id="app">
-    <header class="header">
-      <h2 contenteditable="true" id="jobTitle">
-        Dodge Ram 2500 Diagnostics
-      </h2>
-      <p contenteditable="true" id="jobVin">
-        VIN: 3C6TR5CT7JG123456
-      </p>
-      <div class="view-toggle">
-        <button id="btnTech" class="active">Tech View</button>
-        <button id="btnClient">Client View</button>
-      </div>
-    </header>
-
-    <!-- Splash-Pad for client-side thumbnails -->
-    <div class="splash-pad" id="splashPad"></div>
-
-    <div class="cards" id="stepsContainer"></div>
-
-    <div class="add-step">
-      <button id="btnAddStep">+ Add Diagnostic Step</button>
-    </div>
-  </div>
+  <h1>Welcome to MC Wiring & Controls</h1>
+  <p>Enter the last 4 digits of your VIN:</p>
+  <form id="vinForm">
+    <input
+      type="text"
+      id="vinInput"
+      maxlength="4"
+      pattern="[A-Za-z0-9]{4}"
+      placeholder="e.g. 1A2B"
+      required
+    />
+    <button type="submit">View Status</button>
+  </form>
+  <div id="errorMsg" class="error" aria-live="polite"></div>
 
   <script>
-    const app       = document.getElementById('app');
-    const btnTech   = document.getElementById('btnTech');
-    const btnClient = document.getElementById('btnClient');
-    const stepsCon  = document.getElementById('stepsContainer');
-    const btnAdd    = document.getElementById('btnAddStep');
-    const vinEl     = document.getElementById('jobVin');
-    const splashPad = document.getElementById('splashPad');
-    let stepCount   = 0;
+    const form = document.getElementById('vinForm');
+    const input = document.getElementById('vinInput');
+    const errorMsg = document.getElementById('errorMsg');
 
-    // Build localStorage key per VIN
-    function storageKey() {
-      const vin = vinEl.textContent.replace('VIN: ', '').trim();
-      return 'ramDashboard:' + vin;
-    }
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const vin = input.value.trim().toUpperCase();
 
-    // Read / write
-    function loadState() {
-      const raw = localStorage.getItem(storageKey());
-      return raw ? JSON.parse(raw) : {};
-    }
-    function saveState(state) {
-      localStorage.setItem(storageKey(), JSON.stringify(state));
-    }
-
-    // Toggle views
-    btnTech.onclick = () => {
-      app.classList.replace('client','tech');
-      btnTech.classList.add('active');
-      btnClient.classList.remove('active');
-    };
-    btnClient.onclick = () => {
-      app.classList.replace('tech','client');
-      btnClient.classList.add('active');
-      btnTech.classList.remove('active');
-      loadSplashPad();  // refresh thumbnails on view switch
-    };
-
-    // Dynamically fetch and render all images in /images/
-    function loadSplashPad() {
-      fetch('images/')
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const doc    = parser.parseFromString(html, 'text/html');
-          const links  = Array.from(doc.querySelectorAll('a'))
-                            .map(a=>a.getAttribute('href'));
-          const imgs   = links.filter(h =>
-                            /\.(jpe?g|png|gif|webp)$/i.test(h));
-          splashPad.innerHTML = '';
-          imgs.forEach(fn => {
-            const img = document.createElement('img');
-            img.src = 'images/' + fn;
-            splashPad.appendChild(img);
-          });
-        })
-        .catch(err => {
-          console.warn('Could not load /images/ listing:', err);
-        });
-    }
-
-    // Create or restore a diagnostic step card
-    function createStepCard(defaultTitle, defaultProg = 0, defaultNotes = '') {
-      stepCount++;
-      const key   = stepCount.toString();
-      const state = loadState();
-      const saved = state[key] || {};
-
-      const titleText = saved.title    ?? defaultTitle;
-      const progVal   = saved.progress ?? defaultProg;
-      const notesText = saved.notes    ?? defaultNotes;
-
-      const card = document.createElement('section');
-      card.className    = 'card step';
-      card.dataset.step = key;
-      card.innerHTML    = `
-        <h3 contenteditable="true">${titleText}</h3>
-        <div class="progress-track">
-          <div class="progress-fill" style="width:${progVal}%"></div>
-        </div>
-        <input type="range" class="progress-slider"
-               min="0" max="100" value="${progVal}">
-        <div class="status">${progVal}% Complete</div>
-        <textarea class="notes"
-                  placeholder="Add notes…">${notesText}</textarea>
-      `;
-
-      const slider = card.querySelector('.progress-slider');
-      const fill   = card.querySelector('.progress-fill');
-      const status = card.querySelector('.status');
-      const title  = card.querySelector('h3');
-      const notes  = card.querySelector('.notes');
-
-      // Save this card’s state
-      function commit() {
-        const all = loadState();
-        all[key] = {
-          title:    title.textContent.trim(),
-          progress: slider.value,
-          notes:    notes.value.trim()
-        };
-        saveState(all);
+      if (vin.length !== 4) {
+        errorMsg.textContent = 'Please enter exactly 4 characters.';
+        return;
       }
 
-      slider.addEventListener('input', e => {
-        fill.style.width   = e.target.value + '%';
-        status.textContent = e.target.value + '% Complete';
-        commit();
-      });
-      title.addEventListener('blur', commit);
-      notes.addEventListener('blur', commit);
-
-      stepsCon.appendChild(card);
-    }
-
-    // Initialize default steps
-    ['Verify Battery Voltage',
-     'Test Ground at G201',
-     'Inspect Splice Pack SP303',
-     'Bench-Test Harness Segments']
-      .forEach(step => createStepCard(step));
-
-    // Add new steps on demand
-    btnAdd.onclick = () => {
-      const title = prompt('Enter new diagnostic step title:', 'New Step');
-      if (title) createStepCard(title);
-    };
+      // Redirect to the client status page
+      window.location.href = `status.html?vin=${encodeURIComponent(vin)}`;
+    });
   </script>
 </body>
 </html>

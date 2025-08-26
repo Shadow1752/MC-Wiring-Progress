@@ -2,70 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MC Wiring & Controls Status</title>
+  <title>Job Status Lookup</title>
   <style>
     body {
-      font-family: sans-serif;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
       margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #333;
     }
     h1 {
       margin-bottom: 1rem;
+      color: #1976d2;
     }
-    input {
+    form {
+      display: flex;
+      gap: 0.5rem;
+    }
+    input[type="text"] {
+      width: 120px;
       padding: 0.5rem;
       font-size: 1rem;
-      width: 6rem;
-      text-align: center;
-      margin-right: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-transform: uppercase;
     }
     button {
       padding: 0.5rem 1rem;
       font-size: 1rem;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
-    .error {
-      color: red;
-      margin-top: 0.5rem;
+    button:hover {
+      background: #135aa3;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to MC Wiring & Controls</h1>
-  <p>Enter the last 4 digits of your VIN:</p>
-  <form id="vinForm">
-    <input
-      type="text"
-      id="vinInput"
-      maxlength="4"
-      pattern="[A-Za-z0-9]{4}"
-      placeholder="e.g. 1A2B"
-      required
-    />
-    <button type="submit">View Status</button>
-  </form>
-  <div id="errorMsg" class="error" aria-live="polite"></div>
+<h1>Check Your Job Status</h1>
+<form id="lookupForm">
+  <input
+          id="vinInput"
+          type="text"
+          maxlength="4"
+          placeholder="Last-4 of VIN"
+          pattern="[A-Za-z0-9]{4}"
+          required
+  />
+  <button type="submit">Go</button>
+</form>
 
-  <script>
-    const form = document.getElementById('vinForm');
-    const input = document.getElementById('vinInput');
-    const errorMsg = document.getElementById('errorMsg');
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const vin = input.value.trim().toUpperCase();
-
-      if (vin.length !== 4) {
-        errorMsg.textContent = 'Please enter exactly 4 characters.';
-        return;
-      }
-
-      // Redirect to the client status page
-      window.location.href = `status.html?vin=${encodeURIComponent(vin)}`;
-    });
-  </script>
+<script>
+  document.getElementById('lookupForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const vin = document.getElementById('vinInput').value.trim().toUpperCase();
+    location.href = `status.html?vin=${vin}`;
+  });
+</script>
 </body>
 </html>

@@ -2,69 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Job Status Lookup</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #333;
-    }
-    h1 {
-      margin-bottom: 1rem;
-      color: #1976d2;
-    }
-    form {
-      display: flex;
-      gap: 0.5rem;
-    }
-    input[type="text"] {
-      width: 120px;
-      padding: 0.5rem;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      text-transform: uppercase;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background: #1976d2;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #135aa3;
-    }
-  </style>
+  <title>MC Wiring Client Portal</title>
 </head>
 <body>
-<h1>Check Your Job Status</h1>
-<form id="lookupForm">
-  <input
-          id="vinInput"
-          type="text"
-          maxlength="4"
-          placeholder="Last-4 of VIN"
-          pattern="[A-Za-z0-9]{4}"
-          required
-  />
-  <button type="submit">Go</button>
-</form>
-
-<script>
-  document.getElementById('lookupForm').addEventListener('submit', event => {
-    event.preventDefault();
-    const vin = document.getElementById('vinInput').value.trim().toUpperCase();
-    location.href = `status.html?vin=${vin}`;
-  });
-</script>
+  <h1>Welcome to MC Wiring Client Portal</h1>
+  <ul>
+    <li><a href="jobs/3D7KS19D28G218243/status.html">Dodge Ram VIN Status</a></li>
+    <li><a href="jobs/1234/status.html">Job #1234 Status</a></li>
+  </ul>
 </body>
 </html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Job Status</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      margin: 0 0 1rem;
+      color: #1976d2;
+    }
+    .step {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #28a745;
+      transition: width 0.2s ease;
+    }
+    .notes {
+      margin-top: 0.5rem;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      min-height: 60px;
+      white-space: pre-wrap;
+    }
+    .thumbnails {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .thumbnails img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .error {
+      color: red;
+      margin-top: 1rem;
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+  <script>
+    // YOUR Firebase config here
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_DOMAIN",
+      databaseURL: "YOUR_DB_URL",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db  = firebase.database();
+  </script>
+</head>
+<body>
+<div class="container" id="app">
+  <h1>Job Status</h1>
+  <h2 id="title">Loading…</h2>
+  <div id="steps"></div>
+  <div class="thumbnails" id="images"></div>
+  <div class="error" id="error"></div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const vinKey = params.get('vin');
+  const titleEl = document.getElementById('title');
+  const stepsEl = document.getElementById('steps');
+  const imagesEl = document.getElementById('images');
+  const errorEl  = document.getElementById('error');
+
+  if (!vinKey) {
+    errorEl.textContent = 'VIN not specified. Please enter the last-4 characters in the lookup page.';
+  } else {
+    db.ref('jobs/' + vinKey).once('value')
+      .then(snapshot => {
+        const data = snapshot.val();
+        if (!data) {
+          titleEl.textContent = '';
+          errorEl.textContent = 'No job found for VIN ending in ' + vinKey + '.';
+          return;
+        }
+
+        titleEl.textContent = data.title + ' (' + data.vin + ')';
+
+        stepsEl.innerHTML = '';
+        data.steps.forEach(s => {
+          const stepDiv = document.createElement('div');
+          stepDiv.className = 'step';
+          stepDiv.innerHTML = `
+            <h3>${s.title}</h3>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:${s.progress}%"></div>
+            </div>
+            <div>${s.progress}% Complete</div>
+            <div class="notes">${s.notes || '<em>No notes</em>'}</div>
+          `;
+          stepsEl.appendChild(stepDiv);
+        });
+
+        imagesEl.innerHTML = '';
+        (data.images || []).forEach(src => {
+          const img = document.createElement('img');
+          img.src = src;
+          imagesEl.appendChild(img);
+        });
+      })
+      .catch(err => {
+        errorEl.textContent = 'Error loading data: ' + err.message;
+      });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Status – VIN 1234</title>
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: #f4f4f4;
+          color: #333;
+        }
+        .container {
+          max-width: 700px;
+          margin: 2rem auto;
+          background: #fff;
+          padding: 1.5rem;
+          border-radius: 6px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+          margin: 0 0 1rem;
+          color: #1976d2;
+        }
+        .step {
+          margin-bottom: 1rem;
+          padding: 1rem;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          background: #fafafa;
+        }
+        .progress-track {
+          width: 100%;
+          height: 8px;
+          background: #e0e0e0;
+          border-radius: 4px;
+          overflow: hidden;
+          margin: 0.5rem 0;
+        }
+        .progress-fill {
+          height: 100%;
+          background: #28a745;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Job Status</h1>
+    <h2>Stereo Install on 2021 Chevrolet Sample (…1234)</h2>
+
+    <div class="step">
+        <h3>1. Remove Factory Radio</h3>
+        <div class="progress-track">
+            <div class="progress-fill" style="width:100%"></div>
+        </div>
+        <div>100% Complete</div>
+    </div>
+
+    <div class="step">
+        <h3>2. Mount Stereo & Brackets</h3>
+        <div class="progress-track">
+            <div class="progress-fill" style="width:90%"></div>
+        </div>
+        <div>90% Complete</div>
+    </div>
+
+    <div class="step">
+        <h3>3. Wire Harness & Speaker Leads</h3>
+        <div class="progress-track">
+            <div class="progress-fill" style="width:60%"></div>
+        </div>
+        <div>60% Complete</div>
+    </div>
+
+    <div class="step">
+        <h3>4. Test Function & Sound Quality</h3>
+        <div class="progress-track">
+            <div class="progress-fill" style="width:30%"></div>
+        </div>
+        <div>30% Complete</div>
+    </div>
+
+    <div class="step">
+        <h3>5. Final Trim & Cleanup</h3>
+        <div class="progress-track">
+            <div class="progress-fill" style="width:10%"></div>
+        </div>
+        <div>10% Complete</div>
+    </div>
+</div>
+</body>
+</html>
